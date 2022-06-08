@@ -1,6 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'v1'], function () {
-
     Route::group(['prefix' => 'public'], function () {
         Route::post('/login', [AuthController::class, 'attempt']);
     });
@@ -28,7 +29,10 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'private'], function () {
         Route::group(['middleware' => ['jwt-auth']], function () {
             Route::post('/auth/logout', [AuthController::class, 'logout']);
+            Route::get('/users', [UserController::class, 'getAllUsers']);
             Route::get('/auth/user', [AuthController::class, 'authUser']);
+
+            Route::get('/rooms', [MessageController::class, 'getRooms']);
         });
     });
 });
