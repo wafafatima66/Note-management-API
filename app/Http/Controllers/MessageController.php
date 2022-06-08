@@ -25,24 +25,9 @@ class MessageController extends Controller
             $auth_user = auth()->user();
             $rooms = DB::select(SQLQueryHelper::roomListQuery($auth_user->id));
 
-            // Detect the opponent user
-            if(count($rooms) > 0) {
+            // Bind the room information
+            if (count($rooms) > 0) {
                 foreach ($rooms as $room) {
-                    /*$roomType = $room->room_type;
-
-                    if($roomType === "one-to-one") {
-                        $connection_user = MessageConnectionUser::where('connection_id', '=', $room->id)
-                            ->where('user_id', '<>', $auth_user->id);
-
-                        if($connection_user->exists()) {
-                            $opponentUser = User::where('id', '=', $connection_user->first()->id);
-
-                            if($opponentUser->exists()) {
-                                $room->opponent_user = $opponentUser->first();
-                            }
-                        }
-                    }*/
-
                     $room->info = MessagesHelper::getRoomDetails($room->id);
                 }
             }
