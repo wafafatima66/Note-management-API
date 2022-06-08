@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MessagesHelper;
 use App\Helpers\SQLQueryHelper;
 use App\Models\Message;
 use App\Models\MessageAttachment;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
+    /**
+     * Get all the message rooms
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getRooms()
     {
         try {
@@ -23,7 +28,7 @@ class MessageController extends Controller
             // Detect the opponent user
             if(count($rooms) > 0) {
                 foreach ($rooms as $room) {
-                    $roomType = $room->room_type;
+                    /*$roomType = $room->room_type;
 
                     if($roomType === "one-to-one") {
                         $connection_user = MessageConnectionUser::where('connection_id', '=', $room->id)
@@ -36,7 +41,9 @@ class MessageController extends Controller
                                 $room->opponent_user = $opponentUser->first();
                             }
                         }
-                    }
+                    }*/
+
+                    $room->info = MessagesHelper::getRoomDetails($room->id);
                 }
             }
 
@@ -69,7 +76,7 @@ class MessageController extends Controller
 
             $connection = $connection->with('sender')->with('receiver');
 
-            if ($connection->exists()) {
+            /*if ($connection->exists()) {
                 $connection = $connection->first();
 
                 if ($connection->sender->id === $auth_user->id) {
@@ -83,7 +90,7 @@ class MessageController extends Controller
                     'message' => 'Initial room found!',
                     'data' => $connection,
                 ]);
-            }
+            }*/
 
             return response()->json([
                 'success' => false,
