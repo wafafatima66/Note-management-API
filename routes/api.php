@@ -33,6 +33,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/auth/user', [AuthController::class, 'authUser']);
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
+            Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
         });
     });
 });

@@ -45,41 +45,22 @@ class MessageController extends Controller
         }
     }
 
-    public function getRoomData(Request $request)
+    public function getRoomData($id)
     {
         try {
-            $id = (int)$request->input('id');
-            $auth_user = auth()->user();
+            $room = MessagesHelper::getRoomDetails($id);
 
-            if ($id > 0) {
-                $connection = MessageConnection::where('id', '=', $id);
-            } else {
-                // get the initial room
-                $connection = MessageConnection::where('sender_id', '=', $auth_user->id)
-                    ->orWhere('receiver_id', '=', $auth_user->id);
-            }
-
-            $connection = $connection->with('sender')->with('receiver');
-
-            /*if ($connection->exists()) {
-                $connection = $connection->first();
-
-                if ($connection->sender->id === $auth_user->id) {
-                    $connection->opponent = $connection->receiver;
-                } else if ($connection->receiver->id === $auth_user->id) {
-                    $connection->opponent = $connection->sender;
-                }
-
+            if ($room !== null) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Initial room found!',
-                    'data' => $connection,
+                    'message' => 'Room data fetched successfully!',
+                    'data' => $room,
                 ]);
-            }*/
+            }
 
             return response()->json([
                 'success' => false,
-                'message' => 'No rooms found!',
+                'message' => 'No room found!',
             ], 404);
         } catch (Exception $exception) {
             return response()->json([

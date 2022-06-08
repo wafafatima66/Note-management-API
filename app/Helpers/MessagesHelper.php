@@ -12,27 +12,31 @@ class MessagesHelper
     {
         $auth_user = auth()->user();
         $room = MessageConnection::where('id', '=', $room_id);
-        $roomDetails = (object)[
-            'title' => '',
-            'user' => null,
-        ];
 
         if ($room->exists()) {
             $room = @$room->first();
 
+            $roomDetails = (object)[
+                'title' => '',
+                'user' => null,
+                'members_count' => 0,
+            ];
+
             if ($room->room_type === "one-to-one") {
                 // One to one chat
+                $roomDetails->members_count = 1; // By default the auth user is the only member
 
-                $connection_user = MessageConnectionUser::where('connection_id', '=', @$room->id)
+                $connectionUser = MessageConnectionUser::where('connection_id', '=', @$room->id)
                     ->where('user_id', '<>', $auth_user->id);
 
-                if ($connection_user->exists()) {
-                    $opponentUser = User::where('id', '=', @$connection_user->first()->id);
+                if ($connectionUser->exists()) {
+                    $opponentUser = User::where('id', '=', @$connectionUser->first()->user_id);
 
                     if ($opponentUser->exists()) {
                         $opponentUser = @$opponentUser->first();
                         $roomDetails->title = @$opponentUser->first_name . " " . @$opponentUser->last_name;
                         $roomDetails->user = $opponentUser;
+                        $roomDetails->members_count = 2; // As we found the opponent user as 2nd member
                     }
                 }
 
@@ -40,9 +44,12 @@ class MessagesHelper
                 // Group chat
                 $roomDetails->title = @$room->room_title;
                 $roomDetails->user = null;
+                $roomDetails->members_count = (int) MessageConnectionUser::where('connection_id', '=', @$room->id)->count();
             }
+
+            return $roomDetails;
         }
 
-        return $roomDetails;
+        return null;
     }
 }
