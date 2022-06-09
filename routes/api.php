@@ -34,9 +34,11 @@ Route::group(['prefix' => 'v1'], function () {
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
             Route::get('/room/new', [MessageController::class, 'createRoom']);
+            Route::get('/get-room-by-user/{user_id}', [MessageController::class, 'getRoomDataByUser']);
             Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
             Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
             Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
+            Route::post('/room/{id}/send-message', [MessageController::class, 'sendMessage']);
         });
     });
 });

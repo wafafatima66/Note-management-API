@@ -11,6 +11,11 @@ use Illuminate\Support\Carbon;
 
 class MessagesHelper
 {
+    /**
+     * Get a room's detail
+     * @param $room_id
+     * @return object|null
+     */
     public static function getRoomDetails($room_id)
     {
         $auth_user = auth()->user();
@@ -47,7 +52,7 @@ class MessagesHelper
                 // Group chat
                 $roomDetails->title = @$room->room_title;
                 $roomDetails->user = null;
-                $roomDetails->members_count = (int) MessageConnectionUser::where('connection_id', '=', @$room->id)->count();
+                $roomDetails->members_count = (int)MessageConnectionUser::where('connection_id', '=', @$room->id)->count();
             }
 
             return $roomDetails;
@@ -57,19 +62,21 @@ class MessagesHelper
     }
 
     /**
+     * Get the messages
      * @param $connection_id
      * @param string $filter {"today" | "yesterday" | "older"}
      * @return mixed
      */
-    public static function getMessages($connection_id, $filter = "today") {
+    public static function getMessages($connection_id, $filter = "today")
+    {
         $auth_user = auth()->user();
         $threads = Message::where('connection_id', $connection_id);
 
-        if($filter === "today") {
+        if ($filter === "today") {
             $threads = $threads->whereDate('created_at', Carbon::today());
-        } elseif($filter === "yesterday") {
+        } elseif ($filter === "yesterday") {
             $threads = $threads->whereDate('created_at', Carbon::yesterday());
-        } elseif($filter === "older") {
+        } elseif ($filter === "older") {
             $threads = $threads->whereDate('created_at', '<=', Carbon::now()->subDays(2)->toDateTimeString());
         }
 
@@ -96,5 +103,62 @@ class MessagesHelper
         }
 
         return $threads;
+    }
+
+    /**
+     * Get a room info by user id
+     * @param $opponent_user_id
+     * @return object|null
+     */
+    public static function getRoomInfoByUserId($opponent_user_id)
+    {
+        $auth_user = auth()->user();
+
+        $my_connections = MessageConnectionUser::where('user_id', '=', $auth_user->id);
+
+        if ((int)$opponent_user_id !== (int)$auth_user->id && $my_connections->exists()) {
+            $my_connections = $my_connections->get();
+
+            foreach ($my_connections as $connection) {
+                $opponentConnection = MessageConnectionUser::where('user_id', '=', $opponent_user_id)
+                    ->where('connection_id', '=', $connection->connection_id);
+
+                if ($opponentConnection->exists()) {
+                    return self::getRoomDetails($connection->connection_id);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Create a room
+     * @param $room_type
+     * @param $room_title
+     * @param $user_id_array
+     * @return object|null
+     */
+    public static function createRoom($room_type, $room_title, $user_id_array)
+    {
+        if (count($user_id_array) > 0 && ($room_type === "one-to-one" || "group")) {
+            $message_connection = new MessageConnection();
+            $message_connection->room_type = $room_type;
+            $message_connection->room_title = $room_title;
+            $message_connection->save();
+
+            // register the user list under this connection
+            foreach ($user_id_array as $user_id) {
+                $message_connection_user = new MessageConnectionUser();
+                $message_connection_user->connection_id = $message_connection->id;
+                $message_connection_user->user_id = $user_id;
+                $message_connection_user->save();
+            }
+
+
+            return self::getRoomDetails($message_connection->id);
+        }
+
+        return null;
     }
 }
