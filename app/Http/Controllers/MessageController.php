@@ -8,6 +8,7 @@ use App\Models\Message;
 use App\Models\MessageAttachment;
 use App\Models\MessageConnection;
 use App\Models\MessageConnectionUser;
+use App\Models\MessageNote;
 use App\Models\MessageSeenStatus;
 use Illuminate\Http\Request;
 use \Exception;
@@ -283,6 +284,101 @@ class MessageController extends Controller
                 'message' => 'Connection not found!',
             ], 404);
 
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get all the chat notes
+     * @param $connection_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getChatNotes($connection_id)
+    {
+        try {
+            $auth_user = auth()->user();
+            $notes = MessageNote::where('message_connection_id', '=', $connection_id)
+                ->where('user_id', '=', $auth_user->id)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Message notes fetched successfully!',
+                'data' => $notes,
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update chat note
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateChatNote(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $auth_user = auth()->user();
+            $id = (int)$request->input('id');
+            $title = $request->input('title');
+            $description = $request->input('description');
+
+            $note = MessageNote::where('id', '=', $id)
+                ->where('user_id', '=', $auth_user->id);
+
+            if ($note->exists()) {
+                $note = $note->first();
+                $note->title = $title;
+                $note->description = $description;
+                $note->save();
+                DB::commit();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Note saved successfully!',
+            ]);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete chat note
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteChatNote($id)
+    {
+        try {
+            DB::beginTransaction();
+            $auth_user = auth()->user();
+
+            $note = MessageNote::where('id', '=', $id)
+                ->where('user_id', '=', $auth_user->id);
+
+            if ($note->exists()) {
+                $note->delete();
+                DB::commit();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Note deleted successfully!',
+            ]);
         } catch (Exception $exception) {
             DB::rollBack();
             return response()->json([

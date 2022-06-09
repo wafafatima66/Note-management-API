@@ -33,12 +33,15 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/auth/user', [AuthController::class, 'authUser']);
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
-            Route::get('/room/new', [MessageController::class, 'createRoom']);
+            Route::post('/room/new', [MessageController::class, 'createRoom']);
             Route::get('/get-room-by-user/{user_id}', [MessageController::class, 'getRoomDataByUser']);
             Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
             Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
-            Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
             Route::post('/room/{id}/send-message', [MessageController::class, 'sendMessage']);
+            Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
+            Route::get('/room/{id}/notes', [MessageController::class, 'getChatNotes']);
+            Route::post('/update-room-note', [MessageController::class, 'updateChatNote']);
+            Route::delete('/delete-room-note/{id}', [MessageController::class, 'deleteChatNote']);
         });
     });
 });

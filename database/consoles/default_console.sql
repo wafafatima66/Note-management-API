@@ -8,9 +8,6 @@ ORDER BY MC.updated_at DESC LIMIT 0, 100
 */
 
 
-SELECT * FROM message_connection_users MCU INNER JOIN message_connections MC ON MCU.connection_id = MC.id WHERE user_id = 1;
-
-
 # TRUNCATE TABLE message_connections;
 # TRUNCATE TABLE message_seen_status;
 # TRUNCATE TABLE message_connection_users;
