@@ -8,8 +8,6 @@ use App\Models\Message;
 use App\Models\MessageAttachment;
 use App\Models\MessageConnection;
 use App\Models\MessageConnectionUser;
-use App\Models\MessageSeenStatus;
-use App\Models\User;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
@@ -76,6 +74,11 @@ class MessageController extends Controller
         }
     }
 
+    /**
+     * Get all the messages under a room
+     * @param $connection_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getMessages($connection_id)
     {
         try {
@@ -105,11 +108,14 @@ class MessageController extends Controller
         }
     }
 
-    public function getSharedFiles(Request $request)
+    /**
+     * Get the files under a conversation room
+     * @param $connection_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSharedFiles($connection_id)
     {
         try {
-            $connection_id = (int)$request->input('connection_id');
-
             if ($connection_id > 0) {
                 $files = MessageAttachment::where('connection_id', $connection_id)->get();
 
@@ -124,6 +130,42 @@ class MessageController extends Controller
                 'success' => false,
                 'message' => 'Connection not found!',
             ], 404);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Create a conversation room
+     * One to one || Group
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createRoom(Request $request)
+    {
+        try {
+            $room_type = $request->input('room_type');
+            $room_title = $request->input('room_title');
+            $user_id_array = $request->input('users');
+
+            if (count($user_id_array) > 0 && ($room_type === "one-to-one" || "group")) {
+                $message_connection = new MessageConnection();
+                $message_connection->room_type = $room_type;
+                $message_connection->room_title = $room_title;
+                $message_connection->save();
+
+                // register the user list under this connection
+                foreach ($user_id_array as $user_id) {
+                    $message_connection_user = new MessageConnectionUser();
+                    $message_connection_user->connection_id = $message_connection->id;
+                    $message_connection_user->user_id = $user_id;
+                    $message_connection_user->save();
+                }
+            }
+
         } catch (Exception $exception) {
             return response()->json([
                 'success' => false,

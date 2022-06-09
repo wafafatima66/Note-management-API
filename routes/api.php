@@ -33,8 +33,10 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/auth/user', [AuthController::class, 'authUser']);
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
+            Route::get('/room/new', [MessageController::class, 'createRoom']);
             Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
             Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
+            Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
         });
     });
 });
