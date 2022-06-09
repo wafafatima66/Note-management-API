@@ -2,9 +2,12 @@
 
 namespace App\Helpers;
 
+use App\Models\Message;
 use App\Models\MessageConnection;
 use App\Models\MessageConnectionUser;
+use App\Models\MessageSeenStatus;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 
 class MessagesHelper
 {
@@ -51,5 +54,47 @@ class MessagesHelper
         }
 
         return null;
+    }
+
+    /**
+     * @param $connection_id
+     * @param string $filter {"today" | "yesterday" | "older"}
+     * @return mixed
+     */
+    public static function getMessages($connection_id, $filter = "today") {
+        $auth_user = auth()->user();
+        $threads = Message::where('connection_id', $connection_id);
+
+        if($filter === "today") {
+            $threads = $threads->whereDate('created_at', Carbon::today());
+        } elseif($filter === "yesterday") {
+            $threads = $threads->whereDate('created_at', Carbon::yesterday());
+        } elseif($filter === "older") {
+            $threads = $threads->whereDate('created_at', '<=', Carbon::now()->subDays(2)->toDateTimeString());
+        }
+
+        $threads = $threads->with('attachments')->orderBy('id', 'asc');
+
+        $threads = $threads->get();
+
+        // Detect the opponent user
+        foreach ($threads as $thread) {
+            $thread->is_opponent = ($thread->user_id === $auth_user->id) ? false : true;
+
+            // Update message seen
+            if ($thread->user_id !== $auth_user->id) {
+                MessageSeenStatus::where('message_connection_id', '=', $connection_id)
+                    ->where('message_id', '=', $thread->id)
+                    ->where('receiver_id', '=', $auth_user->id)
+                    ->update([
+                        'seen_by_receiver' => 1,
+                        'seen_at' => date('Y-m-d H:i:s'),
+                    ]);
+            }
+
+            $thread->date_time = $thread->created_at !== null ? date('h:ia - d M, Y', strtotime($thread->created_at)) : "";
+        }
+
+        return $threads;
     }
 }

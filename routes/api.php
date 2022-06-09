@@ -34,6 +34,7 @@ Route::group(['prefix' => 'v1'], function () {
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
             Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
+            Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
         });
     });
 });

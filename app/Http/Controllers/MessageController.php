@@ -8,6 +8,7 @@ use App\Models\Message;
 use App\Models\MessageAttachment;
 use App\Models\MessageConnection;
 use App\Models\MessageConnectionUser;
+use App\Models\MessageSeenStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use \Exception;
@@ -45,6 +46,11 @@ class MessageController extends Controller
         }
     }
 
+    /**
+     * Get room data by id
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getRoomData($id)
     {
         try {
@@ -70,35 +76,20 @@ class MessageController extends Controller
         }
     }
 
-    public function getThreads(Request $request)
+    public function getMessages($connection_id)
     {
         try {
-            $connection_id = (int)$request->input('connection_id');
-            $auth_user = auth()->user();
-
             if ($connection_id > 0) {
-                $threads = Message::where('connection_id', $connection_id)->with('attachments')->orderBy('id', 'asc');
-
-                $threads = $threads->get();
-
-                // Detect the opponent user
-                foreach ($threads as $thread) {
-                    $thread->is_opponent = ($thread->sender_id === $auth_user->id) ? false : true;
-
-                    // Update message seen
-                    if ($thread->sender_id !== $auth_user->id) {
-                        Message::where('id', '=', $thread->id)->update([
-                            'seen_by_receiver' => 1,
-                        ]);
-                    }
-
-                    $thread->date_time = $thread->created_at !== null ? date('h:ia - d M, Y', strtotime($thread->created_at)) : "";
-                }
+                $messages = [
+                    'older' => MessagesHelper::getMessages($connection_id, "older"),
+                    'yesterday' => MessagesHelper::getMessages($connection_id, "yesterday"),
+                    'today' => MessagesHelper::getMessages($connection_id, "today"),
+                ];
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Message threads fetched successfully!',
-                    'data' => $threads,
+                    'data' => $messages,
                 ]);
             }
 
