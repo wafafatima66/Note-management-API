@@ -11,16 +11,4 @@ class Message extends Model
 
     protected $table = "messages";
     protected $primaryKey = "id";
-
-    public function sender() {
-        return $this->belongsTo(User::class, 'sender_id', 'id');
-    }
-
-    public function receiver() {
-        return $this->belongsTo(User::class, 'receiver_id', 'id');
-    }
-
-    public function attachments() {
-        return $this->hasMany(MessageAttachment::class, 'message_id', 'id');
-    }
 }

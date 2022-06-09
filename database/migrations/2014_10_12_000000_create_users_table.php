@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -19,6 +18,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('email', 255)->unique();
             $table->longtext('password');
+            $table->longtext('profile_photo')->nullable();
             $table->enum('role', ['admin', 'member', 'guest']);
             $table->timestamps();
         });

@@ -30,6 +30,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::group(['middleware' => ['jwt-auth']], function () {
             Route::post('/auth/logout', [AuthController::class, 'logout']);
             Route::get('/users', [UserController::class, 'getAllUsers']);
+            Route::post('/user/edit', [UserController::class, 'updateProfile']);
             Route::get('/auth/user', [AuthController::class, 'authUser']);
 
             Route::get('/rooms', [MessageController::class, 'getRooms']);
