@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -57,6 +58,19 @@ class UserController extends Controller
 
                     if ($role && $auth_user->role === "admin") {
                         $user_profile->role = $role;
+                    }
+
+                    if ($request->hasfile('profile_photo')) {
+                        $baseFolderName = '/users/';
+
+                        $files = $request->file('profile_photo');
+                        foreach ($files as $file) {
+                            $_file = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+                            $_file = $baseFolderName . $_file;
+                            Storage::disk('local')->put('/public/uploads/' . $_file, file_get_contents($file));
+
+                            $user_profile->profile_photo = $_file;
+                        }
                     }
 
                     $user_profile->save();
