@@ -7,14 +7,19 @@ class SQLQueryHelper
     /**
      * @param $user_id
      * @param string $filter {"archived" | "unread" | "all"}
+     * @param string $search
      * @param int $offset
      * @param int $limit
      * @return string
      */
-    public static function roomListQuery($user_id, $filter = "all", $offset = 0, $limit = 100)
+    public static function roomListQuery($user_id, $filter = "all", $search = "", $offset = 0, $limit = 100)
     {
-        if(!$filter || $filter === "") {
+        if(!$filter || trim($filter) === "") {
             $filter = "all";
+        }
+
+        if(!$search || trim($search) === "") {
+            $search = "";
         }
 
         $sql = "SELECT *
@@ -39,6 +44,10 @@ class SQLQueryHelper
                                   INNER JOIN message_connection_users MCU ON MCU.connection_id = MC.id
                          WHERE MCU.user_id = " . $user_id . ") M
                 WHERE M.id <> 0 ";
+
+        if($search !== "") {
+            $sql .= " AND (M.room_title LIKE '%" . $search . "%' OR M.opponent_title LIKE '%" . $search . "%')";
+        }
 
         if ($filter === "all") {
             $sql .= " AND M.archived = 0";

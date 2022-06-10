@@ -27,8 +27,9 @@ class MessageController extends Controller
     {
         try {
             $filter = $request->input('filter');
+            $search = $request->input('search');
             $auth_user = auth()->user();
-            $rooms = DB::select(SQLQueryHelper::roomListQuery($auth_user->id, $filter));
+            $rooms = DB::select(SQLQueryHelper::roomListQuery($auth_user->id, $filter, $search));
 
             // Bind the room information
             if (count($rooms) > 0) {
