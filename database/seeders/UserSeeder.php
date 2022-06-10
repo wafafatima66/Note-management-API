@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
         User::create([
             'first_name' => 'Mohammed',
             'last_name' => 'Nayeem',
+            'display_name' => 'Mohammed Nayeem',
             'email' => 'nayeem@gmail.com',
             'password' => Hash::make('123456'),
         ]);
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
         User::create([
             'first_name' => 'Md Karim',
             'last_name' => 'Ahmed',
+            'display_name' => 'Md Karim Ahmed',
             'email' => 'karim@gmail.com',
             'password' => Hash::make('123456'),
         ]);
