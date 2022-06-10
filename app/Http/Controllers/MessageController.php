@@ -7,6 +7,7 @@ use App\Helpers\SQLQueryHelper;
 use App\Models\Message;
 use App\Models\MessageAttachment;
 use App\Models\MessageConnection;
+use App\Models\MessageConnectionArchive;
 use App\Models\MessageConnectionUser;
 use App\Models\MessageNote;
 use App\Models\MessageSeenStatus;
@@ -19,13 +20,15 @@ class MessageController extends Controller
 {
     /**
      * Get all the message rooms
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getRooms()
+    public function getRooms(Request $request)
     {
         try {
+            $filter = $request->input('filter');
             $auth_user = auth()->user();
-            $rooms = DB::select(SQLQueryHelper::roomListQuery($auth_user->id));
+            $rooms = DB::select(SQLQueryHelper::roomListQuery($auth_user->id, $filter));
 
             // Bind the room information
             if (count($rooms) > 0) {
@@ -201,6 +204,42 @@ class MessageController extends Controller
                 'success' => true,
                 'message' => 'Room data created & fetched successfully!',
                 'data' => $roomData,
+            ]);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Archive a room
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function archiveRoom(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $connection_id = $request->input('connection_id');
+            $auth_user = auth()->user();
+
+            $archived = MessageConnectionArchive::where('connection_id', '=', $connection_id)
+                ->where('user_id', $auth_user->id);
+
+            if (!$archived->exists()) {
+                $archived = new MessageConnectionArchive();
+                $archived->connection_id = $connection_id;
+                $archived->user_id = $auth_user->id;
+                $archived->save();
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Room archived successfully!',
             ]);
         } catch (Exception $exception) {
             DB::rollBack();

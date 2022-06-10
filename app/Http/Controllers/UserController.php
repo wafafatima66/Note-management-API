@@ -34,6 +34,35 @@ class UserController extends Controller
     }
 
     /**
+     * Get user data
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserProfile($id)
+    {
+        try {
+            $user = User::where('id', '=', $id);
+            if ($user->exists()) {
+                $user = $user->first();
+            } else {
+                $user = null;
+            }
+
+            return response()->json([
+                'success' => true,
+                'error_code' => null,
+                'message' => 'User profile fetched successfully!',
+                'data' => $user,
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Update user profile
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
