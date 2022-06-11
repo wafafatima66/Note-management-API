@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
             'display_name' => 'Mohammed Nayeem',
             'email' => 'nayeem@gmail.com',
             'password' => Hash::make('123456'),
+            'profile_photo' => 'https://www.npmjs.com/npm-avatar/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdmF0YXJVUkwiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8xYTJkYmJiYmJmYjBjNTMyNTU5OGVlYjMwYmMzZTYyZT9zaXplPTEwMCZkZWZhdWx0PXJldHJvIn0.3-ENn3N4VD1eQb3SoxvUEpHdaXxKEBhheKZajg8KokU',
         ]);
 
         User::create([

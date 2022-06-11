@@ -25,9 +25,11 @@ class MessagesHelper
             $room = @$room->first();
 
             $roomDetails = (object)[
+                'id' => (int)$room_id,
                 'title' => '',
                 'user' => null,
                 'members_count' => 0,
+                'room_type' => $room->room_type,
             ];
 
             if ($room->room_type === "one-to-one") {
@@ -80,7 +82,7 @@ class MessagesHelper
             $threads = $threads->whereDate('created_at', '<=', Carbon::now()->subDays(2)->toDateTimeString());
         }
 
-        $threads = $threads->with('attachments')->orderBy('id', 'asc');
+        $threads = $threads->with('attachments')->with('sender')->orderBy('id', 'asc');
 
         $threads = $threads->get();
 
@@ -100,6 +102,7 @@ class MessagesHelper
             }
 
             $thread->date_time = $thread->created_at !== null ? date('h:ia - d M, Y', strtotime($thread->created_at)) : "";
+            $thread->display_time = $thread->created_at !== null ? date('h:i a', strtotime($thread->created_at)) : "";
         }
 
         return $threads;
