@@ -311,6 +311,9 @@ class MessageController extends Controller
                     }
                 }
 
+                $connection->updated_at = date('Y-m-d H:i:s');
+                $connection->save();
+
                 DB::commit();
                 return response()->json([
                     'success' => true,

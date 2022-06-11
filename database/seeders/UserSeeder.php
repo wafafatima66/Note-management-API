@@ -32,5 +32,14 @@ class UserSeeder extends Seeder
             'email' => 'karim@gmail.com',
             'password' => Hash::make('123456'),
         ]);
+
+        User::create([
+            'first_name' => 'Rahim',
+            'last_name' => 'Ahmed',
+            'display_name' => 'Rahim Ahmed',
+            'email' => 'rahim@gmail.com',
+            'password' => Hash::make('123456'),
+            'profile_photo' => 'https://play-lh.googleusercontent.com/I-Yd5tJnxw7Ks8FUhUiFr8I4kohd9phv5sRFHG_-nSX9AAD6Rcy570NBZVFJBKpepmc=w240-h480-rw',
+        ]);
     }
 }
