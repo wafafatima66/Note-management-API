@@ -1,4 +1,4 @@
-/*SELECT *
+SELECT *
 FROM (
          SELECT MC.id                            AS id,
                 MC.room_title                    AS room_title,
@@ -24,7 +24,7 @@ WHERE M.id <> 0
 #   AND M.archived = 0
   AND M.unread = 0
 ORDER BY M.updated_at DESC
-LIMIT 0, 100*/
+LIMIT 0, 100
 
 
 
