@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('sender_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('receiver_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('seen_by_receiver')->default(0);
-            $table->timestamp('seen_at');
+            $table->timestamp('seen_at')->nullable();
         });
     }
 
