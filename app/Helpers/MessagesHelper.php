@@ -139,25 +139,33 @@ class MessagesHelper
      * Create a room
      * @param $room_type
      * @param $room_title
+     * @param $is_visible
      * @param $user_id_array
      * @return object|null
      */
-    public static function createRoom($room_type, $room_title, $user_id_array)
+    public static function createRoom($room_type, $room_title, $is_visible, $user_id_array)
     {
-        if (count($user_id_array) > 0 && ($room_type === "one-to-one" || "group")) {
+        $auth_user = auth()->user();
+        if (count($user_id_array) === 0 || count($user_id_array) > 0) {
+            array_push($user_id_array, $auth_user->id);
+        }
+
+        if ($room_type === "one-to-one" || "group") {
             $message_connection = new MessageConnection();
             $message_connection->room_type = $room_type;
             $message_connection->room_title = $room_title;
+            $message_connection->is_visible = $is_visible;
             $message_connection->save();
 
             // register the user list under this connection
-            foreach ($user_id_array as $user_id) {
-                $message_connection_user = new MessageConnectionUser();
-                $message_connection_user->connection_id = $message_connection->id;
-                $message_connection_user->user_id = $user_id;
-                $message_connection_user->save();
+            if (count($user_id_array) > 0) {
+                foreach ($user_id_array as $user_id) {
+                    $message_connection_user = new MessageConnectionUser();
+                    $message_connection_user->connection_id = $message_connection->id;
+                    $message_connection_user->user_id = $user_id;
+                    $message_connection_user->save();
+                }
             }
-
 
             return self::getRoomDetails($message_connection->id);
         }

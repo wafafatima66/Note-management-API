@@ -12,12 +12,18 @@ class UserController extends Controller
 {
     /**
      * Get all the users
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
         try {
-            $users = User::all();
+            $auth_user = auth()->user();
+            $self_in_list = (int)$request->input('self_in_list');
+
+            $users = User::when($self_in_list === 1, function ($q) use ($auth_user) {
+                return $q->where('id', '<>', $auth_user->id);
+            })->get();
 
             return response()->json([
                 'success' => true,

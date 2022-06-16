@@ -196,9 +196,17 @@ class MessageController extends Controller
             DB::beginTransaction();
             $room_type = $request->input('room_type');
             $room_title = $request->input('room_title');
+            $is_visible = (boolean) $request->input('is_visible');
             $user_id_array = $request->input('users');
 
-            $roomData = MessagesHelper::createRoom($room_type, $room_title, $user_id_array);
+            $roomData = MessagesHelper::createRoom($room_type, $room_title, $is_visible, $user_id_array);
+
+            if($roomData === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to create room!',
+                ]);
+            }
 
             DB::commit();
             return response()->json([
