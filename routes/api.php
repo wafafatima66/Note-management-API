@@ -40,6 +40,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/room/send-message', [MessageController::class, 'sendMessage']);
             Route::get('/get-room-by-user/{user_id}', [MessageController::class, 'getRoomDataByUser']);
             Route::get('/room/{id}', [MessageController::class, 'getRoomData']);
+            Route::get('/room/{id}/members', [MessageController::class, 'getRoomMembers']);
             Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
             Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
             Route::get('/room/{id}/notes', [MessageController::class, 'getChatNotes']);

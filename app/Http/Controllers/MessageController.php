@@ -11,6 +11,7 @@ use App\Models\MessageConnectionArchive;
 use App\Models\MessageConnectionUser;
 use App\Models\MessageNote;
 use App\Models\MessageSeenStatus;
+use App\Models\User;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
@@ -196,12 +197,12 @@ class MessageController extends Controller
             DB::beginTransaction();
             $room_type = $request->input('room_type');
             $room_title = $request->input('room_title');
-            $is_visible = (boolean) $request->input('is_visible');
+            $is_visible = (boolean)$request->input('is_visible');
             $user_id_array = $request->input('users');
 
             $roomData = MessagesHelper::createRoom($room_type, $room_title, $is_visible, $user_id_array);
 
-            if($roomData === null) {
+            if ($roomData === null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to create room!',
@@ -437,5 +438,33 @@ class MessageController extends Controller
                 'message' => $exception->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get the members of a room
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRoomMembers($id)
+    {
+        try {
+            $message_connection_users = MessageConnectionUser::where('connection_id', '=', $id)->with('connection')->with('user')->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Chat room members fetched successfully!',
+                'data' => $message_connection_users,
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function removeRoomMember()
+    {
+
     }
 }
