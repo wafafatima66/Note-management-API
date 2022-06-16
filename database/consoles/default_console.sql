@@ -1,4 +1,4 @@
-SELECT *
+/*SELECT *
 FROM (
          SELECT MC.id                            AS id,
                 MC.room_title                    AS room_title,
@@ -24,9 +24,10 @@ WHERE M.id <> 0
 #   AND M.archived = 0
   AND M.unread = 0
 ORDER BY M.updated_at DESC
-LIMIT 0, 100
+LIMIT 0, 100*/
 
-
+# Detect the users who are not existing in a chat room
+SELECT * FROM (SELECT *, (SELECT COUNT(*) FROM message_connection_users MCU WHERE MCU.user_id = U.id AND MCU.connection_id = 10) AS registered FROM users U) AS U WHERE U.registered = 0
 
 # TRUNCATE TABLE message_connections;
 # TRUNCATE TABLE message_seen_status;

@@ -14,11 +14,11 @@ class SQLQueryHelper
      */
     public static function roomListQuery($user_id, $filter = "all", $search = "", $offset = 0, $limit = 100)
     {
-        if(!$filter || trim($filter) === "") {
+        if (!$filter || trim($filter) === "") {
             $filter = "all";
         }
 
-        if(!$search || trim($search) === "") {
+        if (!$search || trim($search) === "") {
             $search = "";
         }
 
@@ -27,6 +27,7 @@ class SQLQueryHelper
                          SELECT MC.id                                                 AS id,
                                 MC.room_title                                         AS room_title,
                                 MC.room_type                                          AS room_type,
+                                MC.is_visible                                          AS is_visible,
                                 (SELECT COUNT(*)
                                  FROM message_seen_status MSS
                                  WHERE MSS.message_connection_id = MC.id
@@ -45,7 +46,7 @@ class SQLQueryHelper
                          WHERE MCU.user_id = " . $user_id . ") M
                 WHERE M.id <> 0 ";
 
-        if($search !== "") {
+        if ($search !== "") {
             $sql .= " AND (M.room_title LIKE '%" . $search . "%' OR M.opponent_title LIKE '%" . $search . "%')";
         }
 
@@ -55,9 +56,34 @@ class SQLQueryHelper
             $sql .= " AND M.archived <> 0";
         } elseif ($filter === "unread") {
             $sql .= " AND M.unread > 0";
+        } elseif ($filter === "private") {
+            $sql .= " AND M.is_visible = 0";
+        } elseif ($filter === "room") {
+            $sql .= " AND M.room_type = 'one-to-one'";
         }
 
         $sql .= " ORDER BY M.updated_at DESC LIMIT " . $offset . ", " . $limit . ";";
+
+        return $sql;
+    }
+
+    /**
+     * Get the query to fetch the user list for a chat room to be added
+     * @param $room_id
+     * @param string $search
+     * @param int $offset
+     * @param int $limit
+     * @return string
+     */
+    public static function chatRoomAddMemberListQuery($room_id, $search = "", $offset = 0, $limit = 100)
+    {
+        $sql = "SELECT * FROM (SELECT *, (SELECT COUNT(*) FROM message_connection_users MCU WHERE MCU.user_id = U.id AND MCU.connection_id = " . $room_id . ") AS registered FROM users U) AS U WHERE U.registered = 0";
+
+        if (trim($search) !== "") {
+            $sql .= " AND (U.first_name LIKE '%" . $search . "%' OR U.last_name LIKE '%" . $search . "%' OR U.display_name LIKE '%" . $search . "%' OR U.email LIKE '%" . $search . "%')";
+        }
+
+        $sql .= " LIMIT " . $offset . ", " . $limit . ";";
 
         return $sql;
     }

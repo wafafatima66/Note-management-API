@@ -46,6 +46,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/room/{id}/notes', [MessageController::class, 'getChatNotes']);
             Route::post('/update-room-note', [MessageController::class, 'updateChatNote']);
             Route::delete('/delete-room-note/{id}', [MessageController::class, 'deleteChatNote']);
+            Route::get('/room-add-member-users', [MessageController::class, 'getAddMemberList']);
+            Route::post('/add-room-member', [MessageController::class, 'addMemberToRoom']);
+            Route::delete('/remove-room-member', [MessageController::class, 'removeRoomMember']);
         });
     });
 });

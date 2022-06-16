@@ -30,6 +30,7 @@ class MessagesHelper
                 'user' => null,
                 'members_count' => 0,
                 'room_type' => $room->room_type,
+                'is_visible' => $room->is_visible,
             ];
 
             if ($room->room_type === "one-to-one") {

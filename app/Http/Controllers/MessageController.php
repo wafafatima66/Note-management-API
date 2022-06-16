@@ -95,7 +95,7 @@ class MessageController extends Controller
             $room = MessagesHelper::getRoomInfoByUserId($user_id);
 
             if ($room === null && (int)$auth_user->id !== (int)$user_id) {
-                $room = MessagesHelper::createRoom('one-to-one', null, [$auth_user->id, $user_id]);
+                $room = MessagesHelper::createRoom('one-to-one', null, false, [$auth_user->id, $user_id]);
             }
 
             if ($room !== null) {
@@ -463,8 +463,120 @@ class MessageController extends Controller
         }
     }
 
-    public function removeRoomMember()
+    /**
+     * Get user list to add in a chat room
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAddMemberList(Request $request)
     {
+        try {
+            $room_id = (int)$request->input('room_id');
+            $search = (string)$request->input('search');
+            if ($room_id === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid room id!',
+                ]);
+            }
 
+            $users = DB::select(SQLQueryHelper::chatRoomAddMemberListQuery((int)$room_id, $search));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Users fetched successfully!',
+                'data' => $users,
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function addMemberToRoom(Request $request)
+    {
+        try {
+            $room_id = (int)$request->input('room_id');
+            $user_id = (int)$request->input('user_id');
+
+            if ($room_id === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid room id!',
+                ]);
+            }
+
+            if ($user_id === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid user id!',
+                ]);
+            }
+
+            $connection = MessageConnection::where('id', '=', $room_id);
+
+            if ($connection->exists()) {
+                $connection = $connection->first();
+                $connection_user = MessageConnectionUser::where('connection_id', '=', $room_id)
+                    ->where('user_id', $user_id);
+
+                if (!$connection_user->exists()) {
+                    $connection_user = new MessageConnectionUser();
+                    $connection_user->connection_id = $room_id;
+                    $connection_user->user_id = $user_id;
+                    $connection_user->save();
+
+                    $connection->updated_at = date('Y-m-d H:i:s');
+                    $connection->save();
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Users added to the room successfully!',
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User is already added in the room!',
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add user in the room!',
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function removeRoomMember(Request $request)
+    {
+        try {
+            $room_id = (int)$request->input('room_id');
+            $user_id = (int)$request->input('user_id');
+
+            $message_connection_user = MessageConnectionUser::where('connection_id', '=', $room_id)
+                ->where('user_id', '=', $user_id);
+
+            if ($message_connection_user->exists()) {
+                $message_connection_user->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Chat room member deleted successfully!',
+            ]);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
     }
 }
