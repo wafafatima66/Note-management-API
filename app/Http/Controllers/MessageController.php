@@ -348,15 +348,24 @@ class MessageController extends Controller
     /**
      * Get all the chat notes
      * @param $connection_id
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getChatNotes($connection_id)
+    public function getChatNotes($connection_id, Request $request)
     {
         try {
             $auth_user = auth()->user();
+            $search = (string)$request->input('search');
             $notes = MessageNote::where('message_connection_id', '=', $connection_id)
                 ->where('user_id', '=', $auth_user->id)
-                ->get();
+                ->when(trim($search) !== "", function ($q) use ($search) {
+                    return $q->where('title', 'LIKE', '%' . $search . '%');
+                })
+                ->orderBy('id', 'desc')->get();
+
+            foreach ($notes as $note) {
+                $note->date = date('d-m-Y', strtotime($note->created_at));
+            }
 
             return response()->json([
                 'success' => true,
@@ -373,31 +382,46 @@ class MessageController extends Controller
 
     /**
      * Update chat note
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateChatNote(Request $request)
+    public function saveChatNote(Request $request)
     {
         try {
             DB::beginTransaction();
             $auth_user = auth()->user();
             $id = (int)$request->input('id');
+            $connection_id = (int)$request->input('room_id');
             $title = $request->input('title');
             $description = $request->input('description');
 
-            $note = MessageNote::where('id', '=', $id)
-                ->where('user_id', '=', $auth_user->id);
-
-            if ($note->exists()) {
-                $note = $note->first();
-                $note->title = $title;
-                $note->description = $description;
-                $note->save();
-                DB::commit();
+            if ($id > 0) {
+                $note = MessageNote::where('id', '=', $id)
+                    ->where('user_id', '=', $auth_user->id);
+                if ($note->exists()) {
+                    $note = $note->first();
+                } else {
+                    $note = new MessageNote();
+                }
+            } else {
+                $note = new MessageNote();
             }
+
+            $note->message_connection_id = $connection_id;
+            $note->user_id = $auth_user->id;
+            $note->title = $title;
+            $note->description = $description;
+            $note->save();
+
+            $note_data = $note;
+            $note_data->date = date('d-m-Y', strtotime($note->created_at));
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Note saved successfully!',
+                'data' => $note_data,
             ]);
         } catch (Exception $exception) {
             DB::rollBack();
