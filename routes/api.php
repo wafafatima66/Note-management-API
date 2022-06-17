@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageMeetingMinutesController;
+use App\Http\Controllers\MessageNotesController;
+use App\Http\Controllers\MessageWikisController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,9 +46,15 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/room/{id}/members', [MessageController::class, 'getRoomMembers']);
             Route::get('/room/{id}/messages', [MessageController::class, 'getMessages']);
             Route::get('/room/{id}/files', [MessageController::class, 'getSharedFiles']);
-            Route::get('/room/{id}/notes', [MessageController::class, 'getChatNotes']);
-            Route::post('/save-room-note', [MessageController::class, 'saveChatNote']);
-            Route::delete('/delete-room-note/{id}', [MessageController::class, 'deleteChatNote']);
+            Route::get('/room/{id}/notes', [MessageNotesController::class, 'getChatNotes']);
+            Route::get('/room/{id}/meeting-minutes', [MessageMeetingMinutesController::class, 'getMeetingMinutes']);
+            Route::get('/room/{id}/wikis', [MessageWikisController::class, 'getWikis']);
+            Route::post('/save-room-note', [MessageNotesController::class, 'saveChatNote']);
+            Route::post('/save-room-meeting-minute', [MessageMeetingMinutesController::class, 'saveMeetingMinute']);
+            Route::post('/save-room-wiki', [MessageWikisController::class, 'saveWiki']);
+            Route::delete('/delete-room-note/{id}', [MessageNotesController::class, 'deleteChatNote']);
+            Route::delete('/delete-room-meeting-minute/{id}', [MessageMeetingMinutesController::class, 'deleteMeetingMinute']);
+            Route::delete('/delete-room-wiki/{id}', [MessageWikisController::class, 'deleteWiki']);
             Route::get('/room-add-member-users', [MessageController::class, 'getAddMemberList']);
             Route::post('/add-room-member', [MessageController::class, 'addMemberToRoom']);
             Route::delete('/remove-room-member', [MessageController::class, 'removeRoomMember']);
