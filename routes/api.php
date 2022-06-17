@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageDailyReportsController;
 use App\Http\Controllers\MessageMeetingMinutesController;
 use App\Http\Controllers\MessageNotesController;
 use App\Http\Controllers\MessageWikisController;
@@ -49,12 +50,15 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/room/{id}/notes', [MessageNotesController::class, 'getChatNotes']);
             Route::get('/room/{id}/meeting-minutes', [MessageMeetingMinutesController::class, 'getMeetingMinutes']);
             Route::get('/room/{id}/wikis', [MessageWikisController::class, 'getWikis']);
+            Route::get('/room/{id}/daily-reports', [MessageDailyReportsController::class, 'getDailyReports']);
             Route::post('/save-room-note', [MessageNotesController::class, 'saveChatNote']);
             Route::post('/save-room-meeting-minute', [MessageMeetingMinutesController::class, 'saveMeetingMinute']);
             Route::post('/save-room-wiki', [MessageWikisController::class, 'saveWiki']);
+            Route::post('/save-room-daily-report', [MessageDailyReportsController::class, 'saveDailyReport']);
             Route::delete('/delete-room-note/{id}', [MessageNotesController::class, 'deleteChatNote']);
             Route::delete('/delete-room-meeting-minute/{id}', [MessageMeetingMinutesController::class, 'deleteMeetingMinute']);
             Route::delete('/delete-room-wiki/{id}', [MessageWikisController::class, 'deleteWiki']);
+            Route::delete('/delete-room-daily-report/{id}', [MessageDailyReportsController::class, 'deleteDailyReport']);
             Route::get('/room-add-member-users', [MessageController::class, 'getAddMemberList']);
             Route::post('/add-room-member', [MessageController::class, 'addMemberToRoom']);
             Route::delete('/remove-room-member', [MessageController::class, 'removeRoomMember']);
