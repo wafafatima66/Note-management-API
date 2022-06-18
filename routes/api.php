@@ -62,6 +62,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/room-add-member-users', [MessageController::class, 'getAddMemberList']);
             Route::post('/add-room-member', [MessageController::class, 'addMemberToRoom']);
             Route::delete('/remove-room-member', [MessageController::class, 'removeRoomMember']);
+            Route::patch('/save-room-settings', [MessageController::class, 'saveRoomSettings']);
         });
     });
 });

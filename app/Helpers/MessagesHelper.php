@@ -27,6 +27,7 @@ class MessagesHelper
             $roomDetails = (object)[
                 'id' => (int)$room_id,
                 'title' => '',
+                'description' => '',
                 'user' => null,
                 'members_count' => 0,
                 'room_type' => $room->room_type,
@@ -54,6 +55,7 @@ class MessagesHelper
             } elseif ($room->room_type === "group") {
                 // Group chat
                 $roomDetails->title = @$room->room_title;
+                $roomDetails->description = @$room->room_description;
                 $roomDetails->user = null;
                 $roomDetails->members_count = (int)MessageConnectionUser::where('connection_id', '=', @$room->id)->count();
             }

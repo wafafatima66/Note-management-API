@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->enum('room_type', ['one-to-one', 'group']);
             $table->string('room_title')->nullable();
+            $table->longText('room_description')->nullable();
             $table->boolean('is_visible')->default(1);
             $table->timestamps();
         });

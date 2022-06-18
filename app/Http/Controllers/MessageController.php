@@ -482,4 +482,45 @@ class MessageController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Save the room settings
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saveRoomSettings(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $room_id = (int)$request->input('room_id');
+            $title = (string)$request->input('title');
+            $description = (string)$request->input('description');
+
+            $message_connection = MessageConnection::where('id', '=', $room_id);
+
+            if ($message_connection->exists()) {
+                $message_connection->update([
+                    'room_title' => $title,
+                    'room_description' => $description,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Room settings saved successfully!',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Chat room not found!',
+            ]);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
 }
