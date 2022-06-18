@@ -164,6 +164,10 @@ class MessageController extends Controller
             if ($connection_id > 0) {
                 $files = MessageAttachment::where('connection_id', $connection_id)->get();
 
+                foreach ($files as $file) {
+                    $file->file_url = MessagesHelper::prepareAttachmentUrl($file->file_url);
+                }
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Shared files fetched successfully!',

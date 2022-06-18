@@ -11,6 +11,11 @@ use Illuminate\Support\Carbon;
 
 class MessagesHelper
 {
+    public static function prepareAttachmentUrl($file_url)
+    {
+        return config('app.url') . '/storage/uploads' . $file_url;
+    }
+
     /**
      * Get a room's detail
      * @param $room_id
@@ -92,6 +97,10 @@ class MessagesHelper
         // Detect the opponent user
         foreach ($threads as $thread) {
             $thread->is_opponent = ($thread->user_id === $auth_user->id) ? false : true;
+
+            foreach ($thread->attachments as $attachment) {
+                $attachment->file_url = self::prepareAttachmentUrl($attachment->file_url);
+            }
 
             // Update message seen
             if ($thread->user_id !== $auth_user->id) {
