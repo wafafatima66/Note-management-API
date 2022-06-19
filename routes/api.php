@@ -5,6 +5,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageDailyReportsController;
 use App\Http\Controllers\MessageMeetingMinutesController;
 use App\Http\Controllers\MessageNotesController;
+use App\Http\Controllers\MessageTasksController;
 use App\Http\Controllers\MessageWikisController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -51,6 +52,10 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/room/{id}/meeting-minutes', [MessageMeetingMinutesController::class, 'getMeetingMinutes']);
             Route::get('/room/{id}/wikis', [MessageWikisController::class, 'getWikis']);
             Route::get('/room/{id}/daily-reports', [MessageDailyReportsController::class, 'getDailyReports']);
+            Route::get('/room/{id}/tasks', [MessageTasksController::class, 'getTaskList']);
+            Route::get('/room/{id}/task-status-list', [MessageTasksController::class, 'getStatusList']);
+            Route::post('/save-room-task', [MessageTasksController::class, 'saveTask']);
+            Route::post('/save-room-task-status', [MessageTasksController::class, 'saveTaskStatus']);
             Route::post('/save-room-note', [MessageNotesController::class, 'saveChatNote']);
             Route::post('/save-room-meeting-minute', [MessageMeetingMinutesController::class, 'saveMeetingMinute']);
             Route::post('/save-room-wiki', [MessageWikisController::class, 'saveWiki']);
