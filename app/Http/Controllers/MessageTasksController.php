@@ -26,6 +26,11 @@ class MessageTasksController extends Controller
                 })
                 ->get();
 
+            foreach ($status_list as $status) {
+                $status->total_tasks = (int)MessageTask::where('status_id', '=', $status->id)->count();
+            }
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Task status list fetched successfully!',
@@ -109,12 +114,20 @@ class MessageTasksController extends Controller
                 ]);
             }
 
-            $tasks = MessageTaskStatus::where('connection_id', '=', $room_id)
+            $tasks = MessageTask::where('connection_id', '=', $room_id)
                 ->when($status_id > 0, function ($q) use ($status_id) {
                     return $q->where('status_id', $status_id);
-                })->when(trim($search) !== "", function ($q) use ($search) {
+                })
+                ->when(trim($search) !== "", function ($q) use ($search) {
                     return $q->where('title', 'LIKE', '%' . $search . '%');
-                });
+                })
+                ->with('assignee')
+                ->with('status')
+                ->get();
+
+            foreach ($tasks as $task) {
+                $task->deadline = date('m/d/Y', strtotime($task->deadline));
+            }
 
             return response()->json([
                 'success' => true,

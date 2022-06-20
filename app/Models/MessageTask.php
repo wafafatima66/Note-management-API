@@ -11,4 +11,12 @@ class MessageTask extends Model
 
     protected $table = "messages_tasks";
     protected $primaryKey = "id";
+
+    public function assignee() {
+        return $this->belongsTo(User::class, 'assignee_id', 'id');
+    }
+
+    public function status() {
+        return $this->belongsTo(MessageTaskStatus::class, 'status_id', 'id');
+    }
 }
