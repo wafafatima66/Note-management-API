@@ -35,8 +35,14 @@ class MessageConnectionSeeder extends Seeder
 
         createRoom('one-to-one', '', [1, 2], 0);
         createRoom('one-to-one', '', [1, 3], 0);
+        createRoom('one-to-one', '', [1, 4], 0);
+        createRoom('one-to-one', '', [1, 5], 0);
         createRoom('one-to-one', '', [2, 3], 0);
-        createRoom('group', 'common', [1, 2, 3], 0);
-        createRoom('group', 'general', [1, 2, 3], 1);
+        createRoom('one-to-one', '', [2, 4], 0);
+        createRoom('one-to-one', '', [2, 5], 0);
+        createRoom('one-to-one', '', [3, 4], 0);
+        createRoom('one-to-one', '', [3, 5], 0);
+        createRoom('group', 'common', [1, 2, 3, 4, 5], 0);
+        createRoom('group', 'general', [1, 2, 3, 4, 5], 1);
     }
 }

@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        // id: 1
         User::create([
             'first_name' => 'Mohammed',
             'last_name' => 'Nayeem',
@@ -25,6 +26,7 @@ class UserSeeder extends Seeder
             'profile_photo' => '',
         ]);
 
+        // id: 2
         User::create([
             'first_name' => 'Acep',
             'last_name' => 'Hasanudin',
@@ -33,11 +35,32 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123456'),
         ]);
 
+        // id: 3
         User::create([
-            'first_name' => 'Yusuf',
+            'first_name' => 'Yusef',
             'last_name' => '',
-            'display_name' => 'Yusuf',
-            'email' => 'yusuf@gmail.com',
+            'display_name' => 'Yusef',
+            'email' => 'yusef@gmail.com',
+            'password' => Hash::make('123456'),
+            'profile_photo' => '',
+        ]);
+
+        // id: 4
+        User::create([
+            'first_name' => 'Teppei',
+            'last_name' => '',
+            'display_name' => 'Teppei',
+            'email' => 'teppei@gmail.com',
+            'password' => Hash::make('123456'),
+            'profile_photo' => '',
+        ]);
+
+        // id: 5
+        User::create([
+            'first_name' => 'Miyahara',
+            'last_name' => '',
+            'display_name' => 'Miyahara',
+            'email' => 'miyahara@gmail.com',
             'password' => Hash::make('123456'),
             'profile_photo' => '',
         ]);
