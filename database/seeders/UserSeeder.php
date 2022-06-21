@@ -22,24 +22,24 @@ class UserSeeder extends Seeder
             'display_name' => 'Mohammed Nayeem',
             'email' => 'nayeem@gmail.com',
             'password' => Hash::make('123456'),
-            'profile_photo' => 'https://www.npmjs.com/npm-avatar/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdmF0YXJVUkwiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8xYTJkYmJiYmJmYjBjNTMyNTU5OGVlYjMwYmMzZTYyZT9zaXplPTEwMCZkZWZhdWx0PXJldHJvIn0.3-ENn3N4VD1eQb3SoxvUEpHdaXxKEBhheKZajg8KokU',
+            'profile_photo' => '',
         ]);
 
         User::create([
-            'first_name' => 'Md Karim',
-            'last_name' => 'Ahmed',
-            'display_name' => 'Md Karim Ahmed',
-            'email' => 'karim@gmail.com',
+            'first_name' => 'Acep',
+            'last_name' => 'Hasanudin',
+            'display_name' => 'Acep Hasanudin',
+            'email' => 'acep@gmail.com',
             'password' => Hash::make('123456'),
         ]);
 
         User::create([
-            'first_name' => 'Rahim',
-            'last_name' => 'Ahmed',
-            'display_name' => 'Rahim Ahmed',
-            'email' => 'rahim@gmail.com',
+            'first_name' => 'Yusuf',
+            'last_name' => '',
+            'display_name' => 'Yusuf',
+            'email' => 'yusuf@gmail.com',
             'password' => Hash::make('123456'),
-            'profile_photo' => 'https://play-lh.googleusercontent.com/I-Yd5tJnxw7Ks8FUhUiFr8I4kohd9phv5sRFHG_-nSX9AAD6Rcy570NBZVFJBKpepmc=w240-h480-rw',
+            'profile_photo' => '',
         ]);
     }
 }

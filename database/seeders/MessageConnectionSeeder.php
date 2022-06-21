@@ -17,11 +17,12 @@ class MessageConnectionSeeder extends Seeder
      */
     public function run()
     {
-        function createRoom($type, $title, $userIdArray)
+        function createRoom($type, $title, $userIdArray, $isVisible)
         {
             $message_connection = new MessageConnection();
             $message_connection->room_type = $type;
             $message_connection->room_title = $title;
+            $message_connection->is_visible = $isVisible;
             $message_connection->save();
 
             foreach ($userIdArray as $user_id) {
@@ -32,9 +33,10 @@ class MessageConnectionSeeder extends Seeder
             }
         }
 
-        createRoom('one-to-one', '', [1, 2]);
-        createRoom('one-to-one', '', [1, 3]);
-        createRoom('one-to-one', '', [2, 3]);
-        createRoom('group', 'Software Development', [1, 2, 3]);
+        createRoom('one-to-one', '', [1, 2], 0);
+        createRoom('one-to-one', '', [1, 3], 0);
+        createRoom('one-to-one', '', [2, 3], 0);
+        createRoom('group', 'common', [1, 2, 3], 0);
+        createRoom('group', 'general', [1, 2, 3], 1);
     }
 }
