@@ -24,8 +24,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(UserSeeder::class);
         $this->call(MessageConnectionSeeder::class);
-        $this->call(NoteSeeder::class);
-        $this->call(NoteCategorySeeder::class);
         $this->call(ApplicationSeeder::class);
     }
 }

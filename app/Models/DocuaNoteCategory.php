@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Note extends Model
+class DocuaNoteCategory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'note',
-        'category_id',
-        'user_id',
-        'title'
+        'parent_id',
+        'title',
+        'user_id'
     ];
+
+   
 }

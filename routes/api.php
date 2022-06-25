@@ -9,11 +9,12 @@ use App\Http\Controllers\MessageMeetingMinutesController;
 use App\Http\Controllers\MessageNotesController;
 use App\Http\Controllers\MessageTasksController;
 use App\Http\Controllers\MessageWikisController;
-use App\Http\Controllers\NoteCategoryController;
-use App\Http\Controllers\NoteController;
+// use App\Http\Controllers\NoteCategoryController;
+// use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Common\ApplicationController;
-use App\Models\NoteCategory;
+use App\Http\Controllers\Docua\NoteCategoryController;
+use App\Http\Controllers\Docua\NoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -76,16 +77,14 @@ Route::group(['prefix' => 'v1'], function () {
             Route::patch('/save-room-settings', [MessageController::class, 'saveRoomSettings']);
 
             Route::group(['prefix' => 'docua'], function () {
-                Route::get('/notes', [NoteController::class, 'index']);
-                Route::post('/save-notes', [NoteController::class, 'store']);
-                Route::get('/note/{id}', [NoteController::class, 'show']);
-                Route::delete('/remove-note/{id}', [NoteController::class, 'destroy']);
-                Route::get('/notes-category', [NoteCategoryController::class, 'index']);
-                Route::post('/save-category', [NoteCategoryController::class, 'store']);
-                Route::get('/category/{id}', [NoteCategoryController::class, 'show']);
-                Route::delete('/remove-category/{id}', [NoteCategoryController::class, 'destroy']);
-
-                Route::get('/user-installed-applications', [ApplicationController::class, 'getUserApplications']);
+                Route::get('/notes', [NoteController::class, 'getNotes']);
+                Route::post('/save-notes', [NoteController::class, 'saveNotes']);
+                Route::get('/note/{id}', [NoteController::class, 'getNoteData']);
+                Route::delete('/remove-note/{id}', [NoteController::class, 'deleteNote']);
+                Route::get('/notes-category', [NoteCategoryController::class, 'getNoteCategories']);
+                Route::post('/save-category', [NoteCategoryController::class, 'saveNoteCategories']);
+                Route::get('/category/{id}', [NoteCategoryController::class, 'getNoteCategoryData']);
+                Route::delete('/remove-category/{id}', [NoteCategoryController::class, 'deleteNoteCategory']);
             });
 
             //Folder and File Managemenet
@@ -94,6 +93,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/files',  [FileManagementController::class, 'saveFile']);
             Route::delete('/folders/{connection_id}/{folder_id}', [FolderManagementController::class, 'deleteFolder']);
             Route::delete('/files/{connection_id}/{id}', [FileManagementController::class, 'deleteFile']);
+
+            // User installed application
+            Route::get('/user-installed-applications', [ApplicationController::class, 'getUserApplications']);
         });
     });
 });

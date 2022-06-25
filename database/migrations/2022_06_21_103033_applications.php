@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
+            $table->string('app_key')->unique();
             $table->string('app_name');
             $table->longText('description')->nullable();
             $table->string('url')->nullable();

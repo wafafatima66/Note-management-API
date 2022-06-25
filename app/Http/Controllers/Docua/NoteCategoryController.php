@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Docua;
 
-use App\Models\Note;
+use App\Http\Controllers\Controller;
+use App\Models\DocuaNoteCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class NoteController extends Controller
+class NoteCategoryController extends Controller
 {
-    
-    public function index()
+    public function getNoteCategories()
     {
         try {
-            $notes = Note::all();
+            $notesCats = DocuaNoteCategory::all();
 
             return response()->json([
                 'success' => true,
                 'error_code' => null,
-                'message' => 'Notes fetched successfully!',
-                'data' => $notes,
+                'message' => 'Note Categories fetched successfully!',
+                'data' => $notesCats,
             ]);
         } catch (Exception $exception) {
             return response()->json([
@@ -28,22 +28,15 @@ class NoteController extends Controller
         }
     }
 
-    public function create()
-    {
-        //
-    }
-
-   
-    public function store(Request $request)
+    public function saveNoteCategories(Request $request)
     {
         try {
             DB::beginTransaction();
 
             $id = (int)$request->input('id');
             $user_id = (int)$request->input('user_id');
-            $category_id = (int)$request->input('category_id');
+            $parent_id = (int)$request->input('parent_id');
             $title = (string)$request->input('title');
-            $description = (string)$request->input('description');
 
             if (!$user_id > 0) {
                 return response()->json([
@@ -54,41 +47,36 @@ class NoteController extends Controller
 
 
             if ($id > 0) {
-                $note = Note::where('id', '=', $id);
-                if ($note->exists()) {
-                    $note = $note->first();
+                $noteCats = DocuaNoteCategory::where('id', '=', $id);
+                if ($noteCats->exists()) {
+                    $noteCats = $noteCats->first();
                 } else {
-                    $note = new Note();
+                    $noteCats = new DocuaNoteCategory();
                 }
             } else {
-                $note = new Note();
+                $noteCats = new DocuaNoteCategory();
             }
 
             if ($user_id > 0) {
-                $note->user_id = $user_id;
+                $noteCats->user_id = $user_id;
             }
 
-            if ($category_id > 0) {
-                $note->category_id = $category_id;
+            if ($parent_id > 0) {
+                $noteCats->parent_id = $parent_id;
             }
 
             if ($title !== "") {
-                $note->title = $title;
+                $noteCats->title = $title;
             }
 
-            if ($description !== "") {
-                $note->description = $description;
-            }
-
-            $note->save();
+            $noteCats->save();
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Note saved successfully!',
-                'data' => $note,
+                'message' => 'Note Category saved successfully!',
+                'data' => $noteCats,
             ]);
-            
         } catch (Exception $exception) {
             DB::rollBack();
             return response()->json([
@@ -98,23 +86,23 @@ class NoteController extends Controller
         }
     }
 
-   
-    public function show($id)
+
+    public function getNoteCategoryData($id)
     {
         try {
-            $note = Note::where('id',"=",$id)->first();
+            $noteCat = DocuaNoteCategory::where('id', "=", $id)->first();
 
-            if ($note !== null) {
+            if ($noteCat !== null) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Note data fetched successfully!',
-                    'data' => $note,
+                    'message' => 'Note Category data fetched successfully!',
+                    'data' => $noteCat,
                 ]);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'No note found!',
+                'message' => 'No note category found!',
             ], 404);
         } catch (Exception $exception) {
             return response()->json([
@@ -124,33 +112,20 @@ class NoteController extends Controller
         }
     }
 
-  
-    public function edit(Note $note)
+    public function deleteNoteCategory($id)
     {
-        //
-    }
-
-   
-    public function update(UpdateNoteRequest $request, Note $note)
-    {
-        //
-    }
-
-  
-    public function destroy($id)
-    { 
         try {
             DB::beginTransaction();
-            $note = Note::where('id', '=', $id);
+            $notecat = DocuaNoteCategory::where('id', '=', $id);
 
-            if ($note->exists()) {
-                $note->delete();
+            if ($notecat->exists()) {
+                $notecat->delete();
                 DB::commit();
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Note deleted successfully!',
+                'message' => 'Note Category deleted successfully!'
             ]);
         } catch (Exception $exception) {
             DB::rollBack();

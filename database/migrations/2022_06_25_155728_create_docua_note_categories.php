@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('note_categories', function (Blueprint $table) {
+        Schema::create('docua_note_categories', function (Blueprint $table) {
             $table->id();
-            $table->integer('parent_id');
-            $table->string('title');
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->bigInteger('parent_id');
+            $table->string('title')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('note_categories');
+        Schema::dropIfExists('docua_note_categories');
     }
 };
