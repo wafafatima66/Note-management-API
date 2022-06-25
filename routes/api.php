@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileManagementController;
+use App\Http\Controllers\FolderManagementController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageDailyReportsController;
 use App\Http\Controllers\MessageMeetingMinutesController;
@@ -83,6 +85,12 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::delete('/remove-category/{id}', [NoteCategoryController::class, 'destroy']);
             });
 
+            //Folder and File Managemenet
+            Route::get('/folders/{connection_id}/{folder_id?}',  [FolderManagementController::class, 'getFolder']);
+            Route::post('/folders',  [FolderManagementController::class, 'saveFolder']);
+            Route::post('/files',  [FileManagementController::class, 'saveFile']);
+            Route::delete('/folders/{connection_id}/{folder_id}', [FolderManagementController::class, 'deleteFolder']);
+            Route::delete('/files/{connection_id}/{id}', [FileManagementController::class, 'deleteFile']);
         });
     });
 });
