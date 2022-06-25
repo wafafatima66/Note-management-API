@@ -12,6 +12,7 @@ use App\Http\Controllers\MessageWikisController;
 use App\Http\Controllers\NoteCategoryController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Common\ApplicationController;
 use App\Models\NoteCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +84,8 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/save-category', [NoteCategoryController::class, 'store']);
                 Route::get('/category/{id}', [NoteCategoryController::class, 'show']);
                 Route::delete('/remove-category/{id}', [NoteCategoryController::class, 'destroy']);
+
+                Route::get('/user-installed-applications', [ApplicationController::class, 'getUserApplications']);
             });
 
             //Folder and File Managemenet

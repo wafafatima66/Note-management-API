@@ -26,5 +26,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MessageConnectionSeeder::class);
         $this->call(NoteSeeder::class);
         $this->call(NoteCategorySeeder::class);
+        $this->call(ApplicationSeeder::class);
     }
 }
