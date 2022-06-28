@@ -10,6 +10,7 @@ use App\Models\MessageConnection;
 use App\Models\MessageConnectionArchive;
 use App\Models\MessageConnectionUser;
 use App\Models\MessageSeenStatus;
+use App\Models\MentionHistory;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
@@ -319,6 +320,17 @@ class MessageController extends Controller
                         $attachment->file_url = $_file;
                         $attachment->name = $original_name;
                         $attachment->save();
+                    }
+                }
+
+                if($request->has('mentioned_users')){
+                    foreach($request->mentioned_users AS $mention_user_id){
+                        $mentioned_history = new MentionHistory();
+                        $mentioned_history->connection_id = $connection_id;
+                        $mentioned_history->user_id = $mention_user_id;
+                        $mentioned_history->parent_column = 'messages';
+                        $mentioned_history->parent_id =  $message->id;
+                        $mentioned_history->save();
                     }
                 }
 
