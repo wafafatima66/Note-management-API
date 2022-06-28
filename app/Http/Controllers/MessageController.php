@@ -498,6 +498,7 @@ class MessageController extends Controller
             DB::beginTransaction();
             $room_id = (int)$request->input('room_id');
             $title = (string)$request->input('title');
+            $subtitle = (string)$request->input('subtitle');
             $description = (string)$request->input('description');
 
             $message_connection = MessageConnection::where('id', '=', $room_id);
@@ -505,6 +506,7 @@ class MessageController extends Controller
             if ($message_connection->exists()) {
                 $message_connection->update([
                     'room_title' => $title,
+                    'room_subtitle'=>$subtitle,
                     'room_description' => $description,
                 ]);
 
