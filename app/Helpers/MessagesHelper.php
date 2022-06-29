@@ -92,7 +92,7 @@ class MessagesHelper
             $threads = $threads->whereDate('created_at', '<=', Carbon::now()->subDays(2)->toDateTimeString());
         }
 
-        $threads = $threads->with('attachments')->with('sender')->orderBy('id', 'asc');
+        $threads = $threads->with('attachments')->with('sender')->with('mentions')->orderBy('id', 'asc');
 
         $threads = $threads->get();
 
@@ -102,6 +102,10 @@ class MessagesHelper
 
             foreach ($thread->attachments as $attachment) {
                 $attachment->file_url = self::prepareAttachmentUrl($attachment->file_url);
+            }
+            foreach($thread->mentions as $mention){
+                $mention->display_name = $mention->user->display_name;
+                unset($mention->user);
             }
 
             // Update message seen
