@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileManagementController;
 use App\Http\Controllers\FolderManagementController;
@@ -84,6 +85,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/files',  [FileManagementController::class, 'saveFile']);
             Route::delete('/folders/{connection_id}/{folder_id}', [FolderManagementController::class, 'deleteFolder']);
             Route::delete('/files/{connection_id}/{id}', [FileManagementController::class, 'deleteFile']);
+
+            // Applications
+            Route::get('/applications', [ApplicationController::class, 'getAllApplications']);
         });
     });
 });
