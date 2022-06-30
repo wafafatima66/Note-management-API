@@ -9,10 +9,26 @@ use Illuminate\Support\Facades\DB;
 
 class NoteCategoryController extends Controller
 {
+    public  function getChildrenCategory($id)
+    {
+        $cats = DocuaNoteCategory::where('parent_id', '=', $id)->get();
+        foreach ($cats as $cat) {
+            $cat->children_category = $this->getChildrenCategory($cat->id);
+        }
+        return $cats;
+    }
+
     public function getNoteCategories()
     {
         try {
             $notesCats = DocuaNoteCategory::all();
+
+            // Bind the children category information
+            if (count($notesCats) > 0) {
+                foreach ($notesCats as $notesCat) {
+                    $notesCat->children_category = $this->getChildrenCategory($notesCat->id);
+                }
+            }
 
             return response()->json([
                 'success' => true,
@@ -61,9 +77,7 @@ class NoteCategoryController extends Controller
                 $noteCats->user_id = $user_id;
             }
 
-            if ($parent_id > 0) {
-                $noteCats->parent_id = $parent_id;
-            }
+            $noteCats->parent_id = $parent_id;
 
             if ($title !== "") {
                 $noteCats->title = $title;
@@ -91,6 +105,7 @@ class NoteCategoryController extends Controller
     {
         try {
             $noteCat = DocuaNoteCategory::where('id', "=", $id)->first();
+            $noteCat->children_category = $this->getChildrenCategory($id);
 
             if ($noteCat !== null) {
                 return response()->json([
