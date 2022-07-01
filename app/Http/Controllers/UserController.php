@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserProfileSetting;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,13 @@ class UserController extends Controller
                 $user = null;
             }
 
+            $profileSetting = UserProfileSetting::where('user_id', '=', $user->id);
+            if ($profileSetting->exists()) {
+                $profileSetting = $profileSetting->first();
+                $user->is_online = $profileSetting->is_online;
+                $user->notifications_paused = $profileSetting->notifications_paused;
+            }
+
             return response()->json([
                 'success' => true,
                 'error_code' => null,
@@ -81,15 +89,20 @@ class UserController extends Controller
             $id = (int)$request->input('id');
             $first_name = $request->input('first_name');
             $last_name = $request->input('last_name');
+            $is_online = $request->input('is_online');
+            $notifications_paused = $request->input('notifications_paused');
             $role = $request->input('role');
-
             if ($auth_user->role === "admin" || (int)$auth_user->id === $id) {
                 $user_profile = User::where('id', '=', $id);
 
                 if ($user_profile->exists()) {
                     $user_profile = $user_profile->first();
-                    $user_profile->first_name = $first_name;
-                    $user_profile->last_name = $last_name;
+                    if (isset($first_name)) {
+                        $user_profile->first_name = $first_name;
+                    }
+                    if (isset($last_name)) {
+                        $user_profile->last_name = $last_name;
+                    }
 
                     if ($role && $auth_user->role === "admin") {
                         $user_profile->role = $role;
@@ -108,6 +121,20 @@ class UserController extends Controller
                         }
                     }
 
+                    if (isset($is_online) || isset($notifications_paused)) {
+                        $profile = UserProfileSetting::where('user_id', $user_profile->id)->first();
+                        if (!isset($profile)) {
+                            $profile = new UserProfileSetting();
+                            $profile->user_id = $user_profile->id;
+                        }
+                        if (isset($is_online)) {
+                            $profile->is_online = $is_online;
+                        }
+                        if (isset($notifications_paused)) {
+                            $profile->notifications_paused = $notifications_paused;
+                        }
+                        $profile->save();
+                    }
                     $user_profile->save();
                     DB::commit();
 
