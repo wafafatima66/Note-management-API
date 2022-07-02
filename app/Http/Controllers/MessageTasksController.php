@@ -20,6 +20,7 @@ class MessageTasksController extends Controller
     {
         try {
             $search = (string)$request->input('search');
+            $assignee_id = (int)$request->input('assignee_id');
             $status_list = MessageTaskStatus::where('connection_id', '=', $room_id)
                 ->when(trim($search) !== "", function ($q) use ($search) {
                     return $q->where('title', 'LIKE', '%' . $search . '%');
@@ -27,7 +28,11 @@ class MessageTasksController extends Controller
                 ->get();
 
             foreach ($status_list as $status) {
-                $status->total_tasks = (int)MessageTask::where('status_id', '=', $status->id)->count();
+                $status->total_tasks = (int)MessageTask::where('status_id', '=', $status->id)
+                                            ->when($assignee_id > 0, function($q) use ($assignee_id){
+                                                return $q->where('assignee_id', $assignee_id);
+                                            })
+                                            ->count();
             }
 
 
@@ -106,6 +111,7 @@ class MessageTasksController extends Controller
             $room_id = (int)$room_id;
             $status_id = (int)$request->input('status_id');
             $search = (string)$request->input('search');
+            $assignee_id =(int)$request->input('assignee_id');
 
             if (!$room_id > 0) {
                 return response()->json([
@@ -120,6 +126,9 @@ class MessageTasksController extends Controller
                 })
                 ->when(trim($search) !== "", function ($q) use ($search) {
                     return $q->where('title', 'LIKE', '%' . $search . '%');
+                })
+                ->when($assignee_id > 0, function($q) use ($assignee_id){
+                    return $q->where('assignee_id', $assignee_id);
                 })
                 ->with('assignee')
                 ->with('status')
