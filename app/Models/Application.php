@@ -15,4 +15,6 @@ class Application extends Model
         'url',
         'icon'
     ];
+    protected $table = "applications";
+    protected $primaryKey = "id";
 }

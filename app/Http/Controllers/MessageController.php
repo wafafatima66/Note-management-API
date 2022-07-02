@@ -10,6 +10,7 @@ use App\Models\MessageConnection;
 use App\Models\MessageConnectionArchive;
 use App\Models\MessageConnectionUser;
 use App\Models\MessageSeenStatus;
+use App\Models\MentionHistory;
 use Illuminate\Http\Request;
 use \Exception;
 use Illuminate\Support\Facades\DB;
@@ -322,6 +323,17 @@ class MessageController extends Controller
                     }
                 }
 
+                if($request->has('mentioned_users')){
+                    foreach($request->mentioned_users AS $mention_user_id){
+                        $mentioned_history = new MentionHistory();
+                        $mentioned_history->connection_id = $connection_id;
+                        $mentioned_history->user_id = $mention_user_id;
+                        $mentioned_history->parent_column = 'messages';
+                        $mentioned_history->parent_id =  $message->id;
+                        $mentioned_history->save();
+                    }
+                }
+
                 $connection->updated_at = date('Y-m-d H:i:s');
                 $connection->save();
 
@@ -498,6 +510,7 @@ class MessageController extends Controller
             DB::beginTransaction();
             $room_id = (int)$request->input('room_id');
             $title = (string)$request->input('title');
+            $subtitle = (string)$request->input('subtitle');
             $description = (string)$request->input('description');
 
             $message_connection = MessageConnection::where('id', '=', $room_id);
@@ -505,6 +518,7 @@ class MessageController extends Controller
             if ($message_connection->exists()) {
                 $message_connection->update([
                     'room_title' => $title,
+                    'room_subtitle'=>$subtitle,
                     'room_description' => $description,
                 ]);
 
